@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wilson</title>
+</head>
+<body>
+    <h1><span class="red-text">Wil</span><span class="purple-text">son</span></h1>
+    <div class="container">
+        <!-- Red Line Box -->
+        <div id="redbox">
+            <span class="box-title"></span>
+            <div class="inner-container">
+                <div class="inner-box">
+                    <div class="sub-box">Howard
+                        <span class="arrival-time">
+                            {% if train_times and 'Howard' in train_times %}
+                                {{ train_times['Howard'][0] }}
+                            {% else %}
+                                No Data
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="sub-box">Howard
+                        <span class="arrival-time">
+                            {% if train_times and 'Howard' in train_times %}
+                                {{ train_times['Howard'][1] }}
+                            {% else %}
+                                No Data
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="inner-box">
+                    <div class="sub-box">95th
+                        <span class="arrival-time">
+                            {% if train_times and '95th' in train_times %}
+                                {{ train_times['95th'][0] }}
+                            {% else %}
+                                No Data
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="sub-box">95th
+                        <span class="arrival-time">
+                            {% if train_times and '95th' in train_times %}
+                                {{ train_times['95th'][1] }}
+                            {% else %}
+                                No Data
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purple Line Box -->
+        <div id="purplebox">
+            <span class="box-title"></span>
+            <div class="inner-container">
+                <div class="inner-box">
+                    <div class="sub-box">Linden
+                        <span class="arrival-time">
+                            {% if train_times and 'Linden' in train_times %}
+                                {{ train_times['Linden'][0] }}
+                            {% else %}
+                                No Data
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="sub-box">Linden
+                        <span class="arrival-time">
+                            {% if train_times and 'Linden' in train_times %}
+                                {{ train_times['Linden'][1] }}
+                            {% else %}
+                                No Data
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="inner-box">
+                    <div class="sub-box">Loop
+                        <span class="arrival-time">
+                            {% if train_times and 'Loop' in train_times %}
+                                {{ train_times['Loop'][0] }}
+                            {% else %}
+                                No Data
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="sub-box">Loop
+                        <span class="arrival-time">
+                            {% if train_times and 'Loop' in train_times %}
+                                {{ train_times['Loop'][1] }}
+                            {% else %}
+                                No Data
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

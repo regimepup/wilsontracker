@@ -1,0 +1,138 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Center content */
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: url('laser_eyes_train.jpg'); /* Background image */
+    background-size: cover;  /* Ensures the image covers the entire page */
+    background-position: center; /* Centers the image */
+    background-repeat: no-repeat; /* Prevents tiling */
+}
+
+/* Title styling */
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 36px;
+}
+
+/* Colored title */
+.red-text {
+    color: red;
+}
+
+.purple-text {
+    color: purple;
+}
+
+/* Box container */
+.container {
+    display: flex;
+    gap: 20px;
+    justify-content: center; /* Center align */
+    flex-wrap: wrap; /* Responsive design */
+}
+
+/* Parent boxes */
+#redbox,
+#purplebox {
+    background-color: black;
+    width: 600px;
+    height: 300px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0px;
+    font-size: 30px;
+    font-weight: bold;
+    position: relative;
+}
+
+/* Box borders */
+#redbox {
+    border: 10px solid red;
+    color: red;
+}
+
+#purplebox {
+    border: 10px solid purple;
+    color: purple;
+}
+
+/* Inner container for stacked boxes */
+.inner-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    justify-content: space-between; /* Distribute evenly */
+}
+
+/* Inner boxes (Each containing one stop) */
+.inner-box {
+    background-color: white;
+    width: 100%;
+    height: 50%;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content */
+    align-items: center;
+    padding: 0px;
+}
+
+/* Sub-boxes (Howard0, Howard1, etc.) */
+.sub-box {
+    width: 100%; /* Full width of parent */
+    height: 50%; /* Each sub-box takes half of the inner-box */
+    color: white; /* Text color white */
+    border: 1px solid black;
+    display: flex;
+    align-items: center; /* Keep text vertically centered */
+    justify-content: space-between; /* Spread text: left-aligned name & right-aligned time */
+    padding: 0 15px; /* Add padding to the left and right for spacing */
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Right-aligned time */
+.arrival-time {
+    text-align: right; /* Ensures time is aligned to the right */
+    flex-grow: 1; /* Makes the time take up available space to push it to the right */
+    display: flex; /* Allows text to be positioned correctly */
+    justify-content: flex-end; /* Aligns text to the right */
+}
+
+
+/* Style for the stop name */
+.stop-name {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Arrival times */
+.arrival-time {
+    text-align: left;
+    font-size: 18px;
+    font-weight: normal;
+}
+
+/* Apply background colors based on parent */
+#redbox .sub-box {
+    background-color: red;
+}
+
+#purplebox .sub-box {
+    background-color: purple;
+}
