@@ -101,4 +101,4 @@ while True:
     print("\nFetching train arrivals...")
     get_red_arrivals()
     get_purple_arrivals()
-    t.sleep(5)  # Wait 20 seconds before fetching again
+    t.sleep(20)  # Wait 20 seconds before fetching again
