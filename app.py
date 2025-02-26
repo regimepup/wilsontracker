@@ -4,7 +4,7 @@ from datetime import datetime
 import os
 from dotenv import load_dotenv
 from flask import Flask, render_template
-import pytz  # Import for timezone conversion
+import pytz
 
 # Debugging: Print server time
 print("Server Time (UTC):", datetime.utcnow())  # Always UTC
@@ -55,12 +55,11 @@ def get_arrivals(route_name, url):
         data = json.loads(response.text)
 
         # Get current time in Chicago timezone
-        now_chicago = datetime.now(pytz.utc).astimezone(CHICAGO_TZ)
+        now_chicago = datetime.now(CHICAGO_TZ)
 
         for eta in data['ctatt']['eta']:
-            # Convert API time (assumed to be in UTC)
-            arrival_time_utc = datetime.strptime(eta['arrT'], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=pytz.utc)
-            arrival_time_chicago = arrival_time_utc.astimezone(CHICAGO_TZ)
+            # Parse API's arrival time (assumed to be already in Chicago time)
+            arrival_time_chicago = datetime.strptime(eta['arrT'], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=CHICAGO_TZ)
 
             # Calculate time difference in minutes
             time_difference = (arrival_time_chicago - now_chicago).total_seconds() // 60
