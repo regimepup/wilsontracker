@@ -4,6 +4,10 @@ from datetime import datetime, time
 import os
 from dotenv import load_dotenv
 from flask import Flask, render_template
+import pytz
+
+print("Server Time (UTC):", datetime.utcnow())  # Print UTC time
+print("Local Time (System Default):", datetime.now())  # May show incorrect time
 
 # Load environment variables (for API key)
 load_dotenv()
