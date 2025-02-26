@@ -1,6 +1,6 @@
 import requests
 import json
-from datetime import datetime, time
+from datetime import datetime
 import os
 from dotenv import load_dotenv
 from flask import Flask, render_template
@@ -55,24 +55,21 @@ def get_arrivals(route_name, url):
         data = json.loads(response.text)
 
         # Get current time in Chicago timezone
-        now_utc = datetime.utcnow().replace(tzinfo=pytz.utc)
-        now_chicago = now_utc.astimezone(CHICAGO_TZ)
+        now_chicago = datetime.now(pytz.utc).astimezone(CHICAGO_TZ)
 
         for eta in data['ctatt']['eta']:
-            # Convert API time (assumed to be in Chicago time)
+            # Convert API time (assumed to be in UTC)
             arrival_time_utc = datetime.strptime(eta['arrT'], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=pytz.utc)
             arrival_time_chicago = arrival_time_utc.astimezone(CHICAGO_TZ)
 
             # Calculate time difference in minutes
-            time_difference = (arrival_time_chicago - now_chicago).seconds // 60
+            time_difference = (arrival_time_chicago - now_chicago).total_seconds() // 60
 
             # Avoid negative values
             if time_difference < 0:
-                time_difference = "NA"
+                arrivals.append("NA")
             else:
-                time_difference = f"{time_difference} minutes"
-
-            arrivals.append(time_difference)
+                arrivals.append(f"{int(time_difference)} minutes")
 
     except Exception as e:
         print(f"Error fetching {route_name} arrivals: {e}")
