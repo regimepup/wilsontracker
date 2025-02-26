@@ -5,7 +5,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wilson</title>
+    <title>Wilson Station</title>
+    <script>
+        // Function to reload the train data every 20 seconds
+        function refreshData() {
+            setInterval(function() {
+                location.reload();  // This will refresh the entire page every 20 seconds
+            }, 20000);  // 20,000 ms = 20 seconds
+        }
+    </script>
 </head>
 <body>
     <h1><span class="red-text">Wil</span><span class="purple-text">son</span></h1>
