@@ -42,6 +42,9 @@ def get_arrivals(route_name, url):
 
     try:
         response = requests.get(url)
+        print(f"Fetching {route_name} from {url}")  # Debugging line
+        print("Response Status Code:", response.status_code)  # Debugging line
+        print("Response Text:", response.text)  # Debugging line
         data = json.loads(response.text)
 
         now = datetime.now()
