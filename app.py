@@ -4,10 +4,11 @@ from datetime import datetime, time
 import os
 from dotenv import load_dotenv
 from flask import Flask, render_template
-import pytz
+import pytz  # Import for timezone conversion
 
-print("Server Time (UTC):", datetime.utcnow())  # Print UTC time
-print("Local Time (System Default):", datetime.now())  # May show incorrect time
+# Debugging: Print server time
+print("Server Time (UTC):", datetime.utcnow())  # Always UTC
+print("Local Time (System Default):", datetime.now())  # May be incorrect
 
 # Load environment variables (for API key)
 load_dotenv()
@@ -28,10 +29,12 @@ STOP_IDS = {
     "South": "stpid=30106",
 }
 
+# Chicago timezone
+CHICAGO_TZ = pytz.timezone("America/Chicago")
+
 # Construct API URLs
 def build_url(route, stop_id):
     return f"{TRAIN_BASE_URL}key={TRAIN_API_KEY}&{STATION_ID}&{ROUTES[route]}&{MAX_ARRIVALS}&{STOP_IDS[stop_id]}&outputType=JSON"
-
 
 API_URLS = {
     "Howard": build_url("Red", "North"),
@@ -51,18 +54,25 @@ def get_arrivals(route_name, url):
         print("Response Text:", response.text)  # Debugging line
         data = json.loads(response.text)
 
-        now = datetime.now()
-        current_time = now.time()
+        # Get current time in Chicago timezone
+        now_utc = datetime.utcnow().replace(tzinfo=pytz.utc)
+        now_chicago = now_utc.astimezone(CHICAGO_TZ)
 
         for eta in data['ctatt']['eta']:
-            arrival_time_str = eta['arrT'].split('T')[1]  # Extract time (HH:MM:SS)
-            arrival_time = datetime.strptime(arrival_time_str, "%H:%M:%S").time()
+            # Convert API time (assumed to be in Chicago time)
+            arrival_time_utc = datetime.strptime(eta['arrT'], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=pytz.utc)
+            arrival_time_chicago = arrival_time_utc.astimezone(CHICAGO_TZ)
 
             # Calculate time difference in minutes
-            time_difference = (datetime.combine(now.date(), arrival_time) - datetime.combine(now.date(),
-                                                                                             current_time)).seconds // 60
+            time_difference = (arrival_time_chicago - now_chicago).seconds // 60
 
-            arrivals.append(f"{time_difference} minutes")
+            # Avoid negative values
+            if time_difference < 0:
+                time_difference = "NA"
+            else:
+                time_difference = f"{time_difference} minutes"
+
+            arrivals.append(time_difference)
 
     except Exception as e:
         print(f"Error fetching {route_name} arrivals: {e}")
@@ -82,7 +92,6 @@ def get_purple_arrivals():
         "Linden": get_arrivals("Linden", API_URLS["Linden"]),
         "Loop": get_arrivals("Loop", API_URLS["Loop"])
     }
-
 
 # Flask app initialization
 app = Flask(__name__)
