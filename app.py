@@ -54,8 +54,8 @@ def get_arrivals(route_name, url):
             arrival_time_str = eta['arrT']
             print(f"Raw Arrival Time for {route_name}: {arrival_time_str}")  # Debugging
 
-            # Parse API's arrival time (already in Chicago time, so no conversion needed)
-            arrival_time_chicago = datetime.strptime(arrival_time_str, "%Y-%m-%dT%H:%M:%S")
+            # Parse API's arrival time (already in Chicago time)
+            arrival_time_chicago = CHICAGO_TZ.localize(datetime.strptime(arrival_time_str, "%Y-%m-%dT%H:%M:%S"))
 
             # Calculate time difference in minutes
             time_difference = round((arrival_time_chicago - now_chicago).total_seconds() / 60)
