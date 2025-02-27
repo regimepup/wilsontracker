@@ -1,4 +1,3 @@
-
 * {
     margin: 0;
     padding: 0;
@@ -113,7 +112,6 @@ h1 {
     justify-content: flex-end; /* Aligns text to the right */
 }
 
-
 /* Style for the stop name */
 .stop-name {
     font-size: 22px;
@@ -135,4 +133,46 @@ h1 {
 
 #purplebox .sub-box {
     background-color: purple;
+}
+
+/* Media Query for Mobile Devices */
+@media (max-width: 768px) {
+    /* Body and container adjustments */
+    body {
+        height: auto; /* Allow height to adjust */
+    }
+
+    .container {
+        flex-direction: column;  /* Stack boxes vertically */
+        gap: 10px; /* Adjust gap for mobile */
+        width: 100%; /* Ensure container takes full width */
+    }
+
+    /* Adjust size of boxes for mobile */
+    #redbox, #purplebox {
+        width: 80%; /* Resize boxes to 80% width of screen */
+        height: auto; /* Allow height to adjust based on content */
+        margin-bottom: 20px; /* Add space between stacked boxes */
+    }
+
+    /* Inner container will still be stacked */
+    .inner-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Inner boxes (resize on mobile) */
+    .inner-box {
+        width: 100%; /* Full width for mobile */
+        height: auto; /* Allow height to adjust */
+    }
+
+    /* Sub-boxes (adjust height for mobile) */
+    .sub-box {
+        width: 100%;
+        height: 50%; /* Keep the 50% split */
+        font-size: 16px; /* Reduce font size on mobile */
+    }
 }
