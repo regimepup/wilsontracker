@@ -62,7 +62,7 @@ def get_arrivals(route_name, url):
 
             # Avoid showing negative values unless the difference is very small
             if time_difference < 0:
-                arrivals.append("NA")
+                arrivals.append("Due")
             else:
                 arrivals.append(f"{time_difference} minutes")
 
