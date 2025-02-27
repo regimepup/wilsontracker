@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 import os
 import threading
-import time  # Import the time module
+import time
 from dotenv import load_dotenv
 from flask import Flask, render_template
 import pytz
@@ -43,10 +43,10 @@ API_URLS = {
 
 # Global cache for train arrival times
 train_arrival_cache = {
-    "Howard": [],
-    "95th": [],
-    "Linden": [],
-    "Loop": []
+    "Howard": ["Loading..."],
+    "95th": ["Loading..."],
+    "Linden": ["Loading..."],
+    "Loop": ["Loading..."]
 }
 
 # Function to fetch and process train arrivals
@@ -79,7 +79,7 @@ def get_arrivals(route_name, url):
     except Exception as e:
         print(f"Error fetching {route_name} arrivals: {e}")
 
-    return arrivals
+    return arrivals if arrivals else ["No Data Available"]
 
 # Function to get all red line arrivals
 def get_red_arrivals():
@@ -108,15 +108,19 @@ def update_cache():
         train_arrival_cache['Linden'] = purple_arrivals['Linden']
         train_arrival_cache['Loop'] = purple_arrivals['Loop']
 
+        print("Updated cache:", train_arrival_cache)  # Debugging
+
         # Wait for 20 seconds before fetching again
         time.sleep(20)
 
 # Flask app initialization
 app = Flask(__name__)
 
+# Pre-populate cache before starting the background thread
+update_cache()
+
 # Start the background thread to update the cache
-update_thread = threading.Thread(target=update_cache)
-update_thread.daemon = True  # Daemon thread will stop when the main program stops
+update_thread = threading.Thread(target=update_cache, daemon=True)
 update_thread.start()
 
 @app.route('/')
