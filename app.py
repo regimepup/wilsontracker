@@ -2,11 +2,10 @@ import requests
 import json
 from datetime import datetime
 import os
-import threading
-import time
 from dotenv import load_dotenv
 from flask import Flask, render_template
 import pytz
+
 
 # Load environment variables (for API key)
 load_dotenv()
@@ -41,14 +40,6 @@ API_URLS = {
     "Loop": build_url("Purple", "South")
 }
 
-# Global cache for train arrival times
-train_arrival_cache = {
-    "Howard": ["Loading..."],
-    "95th": ["Loading..."],
-    "Linden": ["Loading..."],
-    "Loop": ["Loading..."]
-}
-
 # Function to fetch and process train arrivals
 def get_arrivals(route_name, url):
     arrivals = []
@@ -79,7 +70,7 @@ def get_arrivals(route_name, url):
     except Exception as e:
         print(f"Error fetching {route_name} arrivals: {e}")
 
-    return arrivals if arrivals else ["No Data Available"]
+    return arrivals
 
 # Function to get all red line arrivals
 def get_red_arrivals():
@@ -95,42 +86,21 @@ def get_purple_arrivals():
         "Loop": get_arrivals("Loop", API_URLS["Loop"])
     }
 
-# Function to update the cached arrival times every 20 seconds
-def update_cache():
-    while True:
-        print("Fetching new train arrivals...")
-        red_arrivals = get_red_arrivals()
-        purple_arrivals = get_purple_arrivals()
-
-        # Update the global cache with the new data
-        train_arrival_cache['Howard'] = red_arrivals['Howard']
-        train_arrival_cache['95th'] = red_arrivals['95th']
-        train_arrival_cache['Linden'] = purple_arrivals['Linden']
-        train_arrival_cache['Loop'] = purple_arrivals['Loop']
-
-        print("Updated cache:", train_arrival_cache)  # Debugging
-
-        # Wait for 20 seconds before fetching again
-        time.sleep(20)
-
 # Flask app initialization
 app = Flask(__name__)
 
-# Pre-populate cache before starting the background thread
-update_cache()
-
-# Start the background thread to update the cache
-update_thread = threading.Thread(target=update_cache, daemon=True)
-update_thread.start()
-
 @app.route('/')
 def index():
-    # Fetch the cached arrival times
+    # Fetch the arrival times
+    red_arrivals = get_red_arrivals()
+    purple_arrivals = get_purple_arrivals()
+
+    # Combine the data into a single dictionary
     train_times = {
-        'Howard': train_arrival_cache['Howard'],
-        '95th': train_arrival_cache['95th'],
-        'Linden': train_arrival_cache['Linden'],
-        'Loop': train_arrival_cache['Loop']
+        'Howard': red_arrivals['Howard'],
+        '95th': red_arrivals['95th'],
+        'Linden': purple_arrivals['Linden'],
+        'Loop': purple_arrivals['Loop']
     }
 
     # Pass the train_times to the template
