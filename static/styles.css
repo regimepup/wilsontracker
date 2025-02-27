@@ -144,9 +144,12 @@ h1 {
     }
 
     .container {
-        flex-direction: column;  /* Stack boxes vertically */
-        gap: 10px; /* Adjust gap for mobile */
-        width: 100%; /* Ensure container takes full width */
+        display: flex;
+        flex-direction: column; /* Stack boxes vertically */
+        align-items: center; /* Centers the boxes horizontally */
+        justify-content: center; /* Ensures content stays centered */
+        gap: 20px; /* Space between boxes */
+        width: 100%; /* Ensures full width for centering */
     }
 
     /* Adjust size of boxes for mobile */
