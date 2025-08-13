@@ -8,10 +8,10 @@
 body {
     display: flex;
     flex-direction: column;
-    justify-content: center; /* top-align content */
+    justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-image: url('https://i.imgur.com/abcdefg.jpg'); /* Direct image link */
+    background-image: url('https://i.imgur.com/abcdefg.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -30,14 +30,23 @@ h1 {
 .red-text { color: red; }
 .purple-text { color: purple; }
 
-/* === Container for boxes === */
+/* === Timestamp === */
+#last-updated {
+    font-size: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* === Container for boxes (updated centering) === */
 .container {
     display: flex;
     gap: 20px;
-    justify-content: center;
-    flex-wrap: wrap;
+    justify-content: center; /* center horizontally */
+    align-items: center;     /* center vertically within container */
+    flex-wrap: nowrap;       /* keep boxes on one line for wide screens */
     width: 100%;
     max-width: 1300px;
+    margin: 0 auto;          /* center container itself */
 }
 
 /* === Parent Boxes === */
@@ -50,10 +59,11 @@ h1 {
     padding: 0;
     font-size: 30px;
     font-weight: bold;
-    position: relative;
     width: 600px;
     min-height: 300px;
     color: white;
+    flex-shrink: 0;          /* prevent shrinking on wide screens */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3); /* subtle shadow */
 }
 
 #redbox {
@@ -66,24 +76,16 @@ h1 {
     background-color: purple;
 }
 
-/* === Inner container for stacking stops === */
-.inner-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    flex: 1; /* allows dynamic height */
-}
-
-/* === Inner boxes (each representing one direction) === */
+/* === Inner boxes (each direction) === */
 .inner-box {
     display: flex;
     flex-direction: column;
     width: 100%;
-    flex: 1; /* split evenly */
+    flex: 1; /* split parent box evenly */
     justify-content: space-between;
 }
 
-/* === Sub-boxes (individual stops) === */
+/* === Sub-boxes (individual trains) === */
 .sub-box {
     display: flex;
     align-items: center;
@@ -134,13 +136,18 @@ h1 {
 }
 
 /* === Responsive Design === */
+@media (max-width: 1300px) {
+    .container {
+        flex-wrap: wrap; /* allow wrapping for narrower viewports */
+    }
+}
+
 @media (max-width: 768px) {
     body {
         padding: 10px;
     }
 
     .container {
-        display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
