@@ -3,7 +3,7 @@
   <component name="Black">
     <option name="executionMode" value="BINARY" />
     <option name="pathToExecutable" value="C:\Program Files\Python38\Scripts\black.exe" />
-    <option name="sdkUUID" value="4ec224e1-f495-4cb5-8f98-f9d0fca00808" />
+    <option name="sdkName" value="Python 3.6 (CTA_Tracker)" />
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.6 (CTA_Tracker)" project-jdk-type="Python SDK" />
   <component name="PyCharmProfessionalAdvertiser">

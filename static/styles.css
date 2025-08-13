@@ -1,182 +1,168 @@
+/* === Reset & Base === */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Center content */
 body {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: center; /* top-align content */
     align-items: center;
-    height: 100vh;
-    background-image: url('https://imgur.com/a/jnm6G4T'); /* Background image */
-    background-size: cover;  /* Ensures the image covers the entire page */
-    background-position: center; /* Centers the image */
-    background-repeat: no-repeat; /* Prevents tiling */
-    background-color: pink; /* for a nice background ig image doesn't load*/
+    min-height: 100vh;
+    background-image: url('https://i.imgur.com/abcdefg.jpg'); /* Direct image link */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: pink; /* fallback */
+    padding: 20px;
+    font-family: Arial, sans-serif;
 }
 
-/* Title styling */
+/* === Titles === */
 h1 {
     text-align: center;
     margin-bottom: 20px;
     font-size: 36px;
 }
 
-/* Colored title */
-.red-text {
-    color: red;
-}
+.red-text { color: red; }
+.purple-text { color: purple; }
 
-.purple-text {
-    color: purple;
-}
-
-/* Box container */
+/* === Container for boxes === */
 .container {
     display: flex;
     gap: 20px;
-    justify-content: center; /* Center align */
-    flex-wrap: wrap; /* Responsive design */
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 1300px;
 }
 
-/* Parent boxes */
+/* === Parent Boxes === */
 #redbox,
 #purplebox {
-    background-color: black;
-    width: 600px;
-    height: 300px;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0px;
+    padding: 0;
     font-size: 30px;
     font-weight: bold;
     position: relative;
+    width: 600px;
+    min-height: 300px;
+    color: white;
 }
 
-/* Box borders */
 #redbox {
     border: 10px solid red;
-    color: red;
+    background-color: red;
 }
 
 #purplebox {
     border: 10px solid purple;
-    color: purple;
+    background-color: purple;
 }
 
-/* Inner container for stacked boxes */
+/* === Inner container for stacking stops === */
 .inner-container {
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: 100%;
-    justify-content: space-between; /* Distribute evenly */
+    flex: 1; /* allows dynamic height */
 }
 
-/* Inner boxes (Each containing one stop) */
+/* === Inner boxes (each representing one direction) === */
 .inner-box {
-    background-color: white;
-    width: 100%;
-    height: 50%;
-    border: 1px solid black;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Center content */
-    align-items: center;
-    padding: 0px;
+    width: 100%;
+    flex: 1; /* split evenly */
+    justify-content: space-between;
 }
 
-/* Sub-boxes (Howard0, Howard1, etc.) */
+/* === Sub-boxes (individual stops) === */
 .sub-box {
-    width: 100%; /* Full width of parent */
-    height: 50%; /* Each sub-box takes half of the inner-box */
-    color: white; /* Text color white */
-    border: 1px solid black;
     display: flex;
-    align-items: center; /* Keep text vertically centered */
-    justify-content: space-between; /* Spread text: left-aligned name & right-aligned time */
-    padding: 0 15px; /* Add padding to the left and right for spacing */
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    flex: 1; /* evenly split inside inner-box */
     font-size: 18px;
     font-weight: bold;
+    border: 1px solid black;
+    overflow: hidden;
 }
 
-/* Right-aligned time */
-.arrival-time {
-    text-align: right; /* Ensures time is aligned to the right */
-    flex-grow: 1; /* Makes the time take up available space to push it to the right */
-    display: flex; /* Allows text to be positioned correctly */
-    justify-content: flex-end; /* Aligns text to the right */
-}
-
-/* Style for the stop name */
+/* === Stop Name & Arrival Time === */
 .stop-name {
     font-size: 22px;
     font-weight: bold;
-    margin-bottom: 5px;
+    margin-right: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-/* Arrival times */
 .arrival-time {
-    text-align: left;
     font-size: 18px;
     font-weight: normal;
+    display: flex;
+    justify-content: flex-end;
+    text-align: right;
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-/* Apply background colors based on parent */
-#redbox .sub-box {
-    background-color: red;
+/* === Special Train Styles === */
+.scheduled {
+    opacity: 0.6;
+    font-style: italic;
 }
 
-#purplebox .sub-box {
-    background-color: purple;
+.last-train {
+    color: orange;
 }
 
-/* Media Query for Mobile Devices */
+.holiday-train {
+    color: green;
+    font-weight: bold;
+}
+
+/* === Responsive Design === */
 @media (max-width: 768px) {
-    /* Body and container adjustments */
     body {
-        height: auto; /* Allow height to adjust */
+        padding: 10px;
     }
 
     .container {
         display: flex;
-        flex-direction: column; /* Stack boxes vertically */
-        align-items: center; /* Centers the boxes horizontally */
-        justify-content: center; /* Ensures content stays centered */
-        gap: 20px; /* Space between boxes */
-        width: 100%; /* Ensures full width for centering */
-    }
-
-    /* Adjust size of boxes for mobile */
-    #redbox, #purplebox {
-        width: 80%; /* Resize boxes to 80% width of screen */
-        height: auto; /* Allow height to adjust based on content */
-        margin-bottom: 20px; /* Add space between stacked boxes */
-    }
-
-    /* Inner container will still be stacked */
-    .inner-container {
-        display: flex;
         flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
         width: 100%;
-        height: 100%;
     }
 
-    /* Inner boxes (resize on mobile) */
-    .inner-box {
-        width: 100%; /* Full width for mobile */
-        height: auto; /* Allow height to adjust */
+    #redbox, #purplebox {
+        width: 90%;
+        min-height: auto;
     }
 
-    /* Sub-boxes (adjust height for mobile) */
     .sub-box {
-        width: 100%;
-        height: 50%; /* Keep the 50% split */
-        font-size: 16px; /* Reduce font size on mobile */
+        font-size: 16px;
+        padding: 5px 10px;
+    }
+
+    .stop-name {
+        font-size: 18px;
+    }
+
+    .arrival-time {
+        font-size: 16px;
     }
 }

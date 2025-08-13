@@ -1,104 +1,72 @@
 import requests
 import json
 import time as t
-from datetime import datetime, time
+from datetime import datetime
 from dotenv import load_dotenv
 import os
 
-# General settings
+# === Load API Key ===
 load_dotenv()
 TRAIN_API_KEY = os.getenv('TRAIN_API_KEY')
 TRAIN_BASE_URL = 'https://lapi.transitchicago.com/api/1.0/ttarrivals.aspx?'
-MAX_ARRIVALS = 'max=2'  # Limit arrivals to 2 per request
+MAX_PER_DIRECTION = 2  # Limit to 2 per direction
+STATION_ID = 'mapid=40540'  # Wilson
 
+# Build API URL for the station
+API_URL = f"{TRAIN_BASE_URL}key={TRAIN_API_KEY}&{STATION_ID}&outputType=JSON"
 
-# Route configurations
-ROUTES = {
-    "Red": "rt=Red",
-    "Purple": "rt=P"
-}
-
-# Wilson station information
-STATION_ID = 'mapid=40540'
-STOP_IDS = {
-    "North": "stpid=30105",
-    "South": "stpid=30106",
-}
-
-
-# Construct API URLs
-def build_url(route, stop_id):
-    return f"{TRAIN_BASE_URL}key={TRAIN_API_KEY}&{STATION_ID}&{ROUTES[route]}&{MAX_ARRIVALS}&{STOP_IDS[stop_id]}&outputType=JSON"
-
-
-API_URLS = {
-    "Howard": build_url("Red", "North"),
-    "95th": build_url("Red", "South"),
-    "Linden": build_url("Purple", "North"),
-    "Loop": build_url("Purple", "South")
-}
-
-
-# Function to fetch and process train arrivals
-def get_arrivals(route_name, url):
-    arrivals = []
-    schedule_status = []
-
+def get_station_arrivals():
     try:
-        response = requests.get(url)
-        data = json.loads(response.text)
+        response = requests.get(API_URL)
+        data = response.json()
 
         now = datetime.now()
-        current_time = now.time()
+        arrivals_by_direction = {}
 
         for eta in data['ctatt']['eta']:
-            arrival_time_str = eta['arrT'].split('T')[1]  # Extract time (HH:MM:SS)
-            arrival_time = datetime.strptime(arrival_time_str, "%H:%M:%S").time()
+            route = eta['rt']
+            dest = eta['destNm']
+            minutes_away = (
+                datetime.combine(now.date(), datetime.strptime(eta['arrT'].split('T')[1], "%H:%M:%S").time())
+                - datetime.combine(now.date(), now.time())
+            ).seconds // 60
 
-            # Calculate time difference in minutes
-            time_difference = (datetime.combine(now.date(), arrival_time) - datetime.combine(now.date(),
-                                                                                             current_time)).seconds // 60
+            status = "Scheduled" if eta['isSch'] == '1' else "Tracked"
 
-            # Append formatted time difference
-            arrivals.append(f"{time_difference} minutes")
+            # --- Purple Line Last Train ---
+            last_train_flag = ""
+            if route == "P" and eta.get('isFlt') == '1':
+                last_train_flag = " (LAST TRAIN)"
 
-            # Append schedule status
-            schedule_status.append("Scheduled" if eta['isSch'] == '1' else "Tracked")
+            # --- Red Line Holiday Train ---
+            holiday_flag = ""
+            if route == "Red" and (eta.get('isSpcl') == '1' or
+                                   "Holiday" in dest or
+                                   "Santa" in dest):
+                holiday_flag = " (HOLIDAY TRAIN)"
 
-        print(f"{route_name} Arrivals: {arrivals}")
-        print(f"{route_name} Schedule Status: {schedule_status}")
+            key = f"{route} → {dest}"
+            if key not in arrivals_by_direction:
+                arrivals_by_direction[key] = []
+            arrivals_by_direction[key].append((minutes_away, status, last_train_flag, holiday_flag))
+
+        # Sort by time and limit to MAX_PER_DIRECTION
+        for key in arrivals_by_direction:
+            arrivals_by_direction[key] = sorted(arrivals_by_direction[key], key=lambda x: x[0])[:MAX_PER_DIRECTION]
+
+        # Display results
+        for k, arrivals in arrivals_by_direction.items():
+            display_times = [
+                f"{m} min ({s}){lt}{hf}"
+                for m, s, lt, hf in arrivals
+            ]
+            print(f"{k}: {', '.join(display_times)}")
 
     except Exception as e:
-        print(f"Error fetching {route_name} arrivals: {e}")
+        print(f"Error fetching arrivals: {e}")
 
-
-# Function to get all red line arrivals
-def get_red_arrivals():
-    get_arrivals("Howard", API_URLS["Howard"])
-    get_arrivals("95th", API_URLS["95th"])
-
-
-# Function to get purple line arrivals with time-based filtering
-def get_purple_arrivals():
-    now = datetime.now()
-    current_time = now.time()
-
-    # Define the time ranges
-    morning_start, morning_end = time(5, 2), time(9, 10)
-    afternoon_start, afternoon_end = time(13, 30), time(18, 18)
-
-    # Check if it's Monday-Friday and within the time range
-    if now.weekday() < 5 and (
-            morning_start <= current_time <= morning_end or afternoon_start <= current_time <= afternoon_end):
-        get_arrivals("Loop", API_URLS["Loop"])
-        get_arrivals("Linden", API_URLS["Linden"])
-    else:
-        print("Purple Line arrivals not available outside of service hours.")
-
-
-# Loop to fetch data every 20 seconds
+# Loop to fetch every 20 seconds
 while True:
     print("\nFetching train arrivals...")
-    get_red_arrivals()
-    get_purple_arrivals()
-    t.sleep(20)  # Wait 20 seconds before fetching again
+    get_station_arrivals()
+    t.sleep(20)
