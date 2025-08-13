@@ -99,14 +99,12 @@ def index():
     return render_template("index.html", arrivals=arrivals, last_updated=updated_copy)
 @app.route("/arrivals_json")
 def arrivals_json():
-    """Return current arrivals and last updated time as JSON."""
     with cache_lock:
         arrivals_copy = cached_arrivals.copy()
         updated_copy = last_updated
-    return jsonify({
-        "arrivals": arrivals_copy,
-        "last_updated": updated_copy.strftime('%H:%M:%S') if updated_copy else None
-    })
+    # Format timestamp for frontend
+    timestamp_str = updated_copy.strftime('%H:%M:%S') if updated_copy else None
+    return jsonify({"arrivals": arrivals_copy, "last_updated": timestamp_str})
 
 if __name__ == "__main__":
     # Start background thread to fetch arrivals every 10 seconds
