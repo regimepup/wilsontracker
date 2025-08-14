@@ -87,6 +87,10 @@
         </div>
         {% endif %}
     </div>
+    <div class="emoji-key" style="margin-top:20px; font-size:18px; text-align:center;">
+    ⏰ – Scheduled &nbsp;&nbsp; 📶 – Tracked &nbsp;&nbsp; 🎄 – Holiday Train &nbsp;&nbsp;
+</div>
+
 <script>
 async function updateArrivals() {
     try {
@@ -110,12 +114,12 @@ async function updateArrivals() {
         function buildTrainHTML(train, stopName) {
             const statusEmoji = train.status === 'Scheduled' ? '⏰' : '📶'; // Clock for scheduled, wifi for tracked
             const holidayEmoji = train.holiday_train ? '🎄' : '';
-            const lastTrainEmoji = train.last_train ? '🚋' : '';
+            const lastText = train.last_train ? 'Last' : '';
             return `
                 <div class="sub-box ${train.status === 'Scheduled' ? 'scheduled' : ''} ${train.holiday_train ? 'holiday-train' : ''}">
                     <span class="stop-name">${stopName}</span>
                     <span class="arrival-time">
-                        ${train.minutes} min (${train.status} ${statusEmoji}) ${holidayEmoji} ${lastTrainEmoji}
+                        ${train.minutes} min ${statusEmoji} ${holidayEmoji} ${lastText}
                     </span>
                 </div>
             `;
