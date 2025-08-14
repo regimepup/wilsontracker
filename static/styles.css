@@ -79,7 +79,7 @@ h1 {
     flex-direction: column;
     width: 100%;
     flex: 1; /* split evenly */
-    justify-content: space-between;
+
 }
 
 /* === Sub-boxes (individual stops) === */
