@@ -65,46 +65,27 @@ h1 {
     background-color: purple;
 }
 
-/* === Inner container for stacking stops === */
 .inner-container {
     display: flex;
     flex-direction: column;
-    width: 100%;
-    flex: 1; /* allows dynamic height */
-}
-
-/* Make each half (inner-box) a 2-row grid so there are always two equal slots */
-.inner-box {
-    display: grid;
-    grid-template-rows: repeat(2, 1fr);
-    /* remove flex-only spacing that can fight the grid */
-    justify-content: unset;
-}
-
-/* Ensure the inner container actually fills the box height */
-#redbox .inner-container,
-#purplebox .inner-container {
     height: 100%;
 }
 
-/* Sub-box already uses flex for its internal layout; just ensure it stretches cleanly */
-.sub-box {
-    min-height: 0; /* prevent odd overflow on small screens */
-}
-
-
-/* === Sub-boxes (individual stops) === */
-.sub-box {
+.inner-box {
+    flex: 1; /* Each half takes 50% of the height */
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 15px;
-    flex: 1; /* evenly split inside inner-box */
-    font-size: 18px;
-    font-weight: bold;
-    border: 1px solid black;
-    overflow: hidden;
+    flex-direction: column;
 }
+
+.sub-box {
+    flex: 1; /* Each train takes equal share of its half */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center text vertically */
+    text-align: center;
+    border: 1px solid black; /* Optional: visual debugging */
+}
+
 
 /* === Stop Name & Arrival Time === */
 .stop-name {
