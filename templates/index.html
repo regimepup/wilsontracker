@@ -59,47 +59,35 @@
         </div>
 
         <!-- Purple Line Box -->
+        {% if arrivals["Purple"]["Linden"] or arrivals["Purple"]["Loop"] %}
         <div id="purplebox">
             <div class="inner-container">
                 <!-- Top Half: Linden -->
-                <div class="inner-box">
-                    {% if arrivals["Purple"]["Linden"] %}
-                        {% for train in arrivals["Purple"]["Linden"] %}
-                            <div class="sub-box
-                                        {% if train.status == 'Scheduled' %} scheduled{% endif %}
-                                        {% if train.last_train %} last-train{% endif %}">
-                                <span class="stop-name">Linden</span>
-                                <span class="arrival-time">
-                                    {{ train.minutes }} min
-                                </span>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        <div class="sub-box">Error finding arrivals</div>
-                    {% endif %}
+                <div class="inner-box" id="Purple-Linden">
+                    {% for train in arrivals["Purple"]["Linden"] %}
+                        <div class="train-entry">
+                            {{ train.minutes }} min ({{ train.status }})
+                            {% if train.last_train %} 🚋 (Last Train){% endif %}
+                            {% if train.holiday_train %} 🎄 (Holiday Train){% endif %}
+                        </div>
+                    {% endfor %}
                 </div>
 
                 <!-- Bottom Half: Loop -->
-                <div class="inner-box">
-                    {% if arrivals["Purple"]["Loop"] %}
-                        {% for train in arrivals["Purple"]["Loop"] %}
-                            <div class="sub-box
-                                        {% if train.status == 'Scheduled' %} scheduled{% endif %}
-                                        {% if train.last_train %} last-train{% endif %}">
-                                <span class="stop-name">Loop</span>
-                                <span class="arrival-time">
-                                    {{ train.minutes }} min
-                                </span>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        <div class="sub-box">Error finding arrivals</div>
-                    {% endif %}
+                <div class="inner-box" id="Purple-Loop">
+                    {% for train in arrivals["Purple"]["Loop"] %}
+                        <div class="train-entry">
+                            {{ train.minutes }} min ({{ train.status }})
+                            {% if train.last_train %} 🚋 (Last Train){% endif %}
+                            {% if train.holiday_train %} 🎄 (Holiday Train){% endif %}
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
-    <script>
+<script>
 async function updateArrivals() {
     try {
         const response = await fetch('/arrivals_json');
@@ -111,7 +99,29 @@ async function updateArrivals() {
             lastUpdatedDiv.dataset.lastUpdated = data.last_updated;
         }
 
-        // Update Red Line Howard
+        // --- Hide purple box if no arrivals ---
+        const purpleBox = document.getElementById('purplebox');
+        if (purpleBox) {
+            const hasPurpleArrivals = data.arrivals.Purple.Linden.length > 0 || data.arrivals.Purple.Loop.length > 0;
+            purpleBox.style.display = hasPurpleArrivals ? 'block' : 'none';
+        }
+
+        // Helper function to build train HTML with emojis
+        function buildTrainHTML(train, stopName) {
+            const statusEmoji = train.status === 'Scheduled' ? '⏰' : '📶'; // Clock for scheduled, wifi for tracked
+            const holidayEmoji = train.holiday_train ? '🎄' : '';
+            const lastTrainEmoji = train.last_train ? '🚋' : '';
+            return `
+                <div class="sub-box ${train.status === 'Scheduled' ? 'scheduled' : ''} ${train.holiday_train ? 'holiday-train' : ''}">
+                    <span class="stop-name">${stopName}</span>
+                    <span class="arrival-time">
+                        ${train.minutes} min (${train.status} ${statusEmoji}) ${holidayEmoji} ${lastTrainEmoji}
+                    </span>
+                </div>
+            `;
+        }
+
+        // --- Red Line Howard ---
         const redHowardContainer = document.querySelector('#redbox .inner-box:nth-child(1)');
         if (redHowardContainer) {
             redHowardContainer.innerHTML = '';
@@ -120,19 +130,12 @@ async function updateArrivals() {
                 redHowardContainer.innerHTML = '<div class="sub-box">Error finding arrivals</div>';
             } else {
                 arrivals.forEach(train => {
-                    redHowardContainer.innerHTML += `
-                        <div class="sub-box ${train.status === 'Scheduled' ? 'scheduled' : ''} ${train.holiday_train ? 'holiday-train' : ''}">
-                            <span class="stop-name">Howard</span>
-                            <span class="arrival-time">
-                                ${train.minutes} min ${train.last_train ? '<span class="last-train">(LAST TRAIN)</span>' : ''}
-                            </span>
-                        </div>
-                    `;
+                    redHowardContainer.innerHTML += buildTrainHTML(train, 'Howard');
                 });
             }
         }
 
-        // Repeat for Red 95th
+        // --- Red Line 95th ---
         const red95Container = document.querySelector('#redbox .inner-box:nth-child(2)');
         if (red95Container) {
             red95Container.innerHTML = '';
@@ -141,19 +144,12 @@ async function updateArrivals() {
                 red95Container.innerHTML = '<div class="sub-box">Error finding arrivals</div>';
             } else {
                 arrivals.forEach(train => {
-                    red95Container.innerHTML += `
-                        <div class="sub-box ${train.status === 'Scheduled' ? 'scheduled' : ''} ${train.holiday_train ? 'holiday-train' : ''}">
-                            <span class="stop-name">95th</span>
-                            <span class="arrival-time">
-                                ${train.minutes} min ${train.last_train ? '<span class="last-train">(LAST TRAIN)</span>' : ''}
-                            </span>
-                        </div>
-                    `;
+                    red95Container.innerHTML += buildTrainHTML(train, '95th');
                 });
             }
         }
 
-        // Purple Line Linden
+        // --- Purple Line Linden ---
         const purpleLindenContainer = document.querySelector('#purplebox .inner-box:nth-child(1)');
         if (purpleLindenContainer) {
             purpleLindenContainer.innerHTML = '';
@@ -162,17 +158,12 @@ async function updateArrivals() {
                 purpleLindenContainer.innerHTML = '<div class="sub-box">Error finding arrivals</div>';
             } else {
                 arrivals.forEach(train => {
-                    purpleLindenContainer.innerHTML += `
-                        <div class="sub-box ${train.status === 'Scheduled' ? 'scheduled' : ''} ${train.last_train ? 'last-train' : ''}">
-                            <span class="stop-name">Linden</span>
-                            <span class="arrival-time">${train.minutes} min</span>
-                        </div>
-                    `;
+                    purpleLindenContainer.innerHTML += buildTrainHTML(train, 'Linden');
                 });
             }
         }
 
-        // Purple Line Loop
+        // --- Purple Line Loop ---
         const purpleLoopContainer = document.querySelector('#purplebox .inner-box:nth-child(2)');
         if (purpleLoopContainer) {
             purpleLoopContainer.innerHTML = '';
@@ -181,12 +172,7 @@ async function updateArrivals() {
                 purpleLoopContainer.innerHTML = '<div class="sub-box">Error finding arrivals</div>';
             } else {
                 arrivals.forEach(train => {
-                    purpleLoopContainer.innerHTML += `
-                        <div class="sub-box ${train.status === 'Scheduled' ? 'scheduled' : ''} ${train.last_train ? 'last-train' : ''}">
-                            <span class="stop-name">Loop</span>
-                            <span class="arrival-time">${train.minutes} min</span>
-                        </div>
-                    `;
+                    purpleLoopContainer.innerHTML += buildTrainHTML(train, 'Loop');
                 });
             }
         }
@@ -202,6 +188,8 @@ updateArrivals();
 // Update every 10 seconds
 setInterval(updateArrivals, 10000);
 </script>
+
+
 
 </body>
 </html>
