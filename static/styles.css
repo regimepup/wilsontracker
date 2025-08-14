@@ -165,4 +165,13 @@ h1 {
     .arrival-time {
         font-size: 16px;
     }
+
+}
+.train-entry {
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+.train-entry.updated {
+    background-color: rgba(255, 255, 0, 0.3); /* light yellow highlight */
+    color: black;
 }
