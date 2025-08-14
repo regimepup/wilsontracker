@@ -4,10 +4,14 @@ import os
 from datetime import datetime
 from dotenv import load_dotenv
 import threading
+import pytz
 
 load_dotenv()
 
 app = Flask(__name__)
+
+# === Timezone setup ===
+central_tz = pytz.timezone("America/Chicago")
 
 # === CTA API setup ===
 TRAIN_API_KEY = os.getenv("TRAIN_API_KEY")
@@ -28,11 +32,12 @@ cache_lock = threading.Lock()
 # === Function to fetch arrivals from CTA API ===
 def get_arrivals():
     global cached_arrivals, last_updated
-    now = datetime.now()
+    now_utc = datetime.now(pytz.UTC)  # always get UTC first
+    now_central = now_utc.astimezone(central_tz)  # convert to Central
     fetch_new = False
 
     with cache_lock:
-        if last_updated is None or (now - last_updated).total_seconds() > 10:
+        if last_updated is None or (now_central - last_updated).total_seconds() > 10:
             fetch_new = True
 
     if fetch_new:
@@ -62,8 +67,8 @@ def get_arrivals():
                     continue
 
                 minutes_away = (
-                    datetime.combine(now.date(), datetime.strptime(arr_time_str, "%H:%M:%S").time())
-                    - datetime.combine(now.date(), now.time())
+                    datetime.combine(now_central.date(), datetime.strptime(arr_time_str, "%H:%M:%S").time())
+                    - datetime.combine(now_central.date(), now_central.time())
                 ).seconds // 60
 
                 status = "Scheduled" if eta.get("isSch") == "1" else "Tracked"
@@ -93,11 +98,11 @@ def get_arrivals():
                 for dest in new_arrivals[line]:
                     new_arrivals[line][dest] = sorted(new_arrivals[line][dest], key=lambda x: x["minutes"])[:MAX_PER_DIRECTION]
 
-            # Update cache
+            # Update cache with Central Time
             with cache_lock:
                 cached_arrivals = new_arrivals
-                last_updated = now
-                print(f"[INFO] Arrivals updated at {last_updated}")
+                last_updated = now_central
+                print(f"[INFO] Arrivals updated at {last_updated.strftime('%H:%M:%S')} Central Time")
 
         except Exception as e:
             print(f"[ERROR] Exception fetching arrivals: {e}")

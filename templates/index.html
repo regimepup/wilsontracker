@@ -2,113 +2,92 @@
 <html>
 <head>
     <title>Wilson Station Train Tracker</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Red Line Box -->
+        <div id="redbox">
+            <div class="inner-container">
+                <div class="inner-box">
+                    <div class="sub-box">
+                        <span class="stop-name">Howard</span>
+                        <div id="Red-Howard" class="arrival-time">
+                            {% for train in arrivals.get("Red", {}).get("Howard", []) %}
+                                {{ train["minutes"] }} min{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="sub-box">
+                        <span class="stop-name">95th</span>
+                        <div id="Red-95th" class="arrival-time">
+                            {% for train in arrivals.get("Red", {}).get("95th", []) %}
+                                {{ train["minutes"] }} min{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purple Line Box -->
+        <div id="purplebox">
+            <div class="inner-container">
+                <div class="inner-box">
+                    <div class="sub-box">
+                        <span class="stop-name">Linden</span>
+                        <div id="Purple-Linden" class="arrival-time">
+                            {% for train in arrivals.get("Purple", {}).get("Linden", []) %}
+                                {{ train["minutes"] }} min{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="sub-box">
+                        <span class="stop-name">Loop</span>
+                        <div id="Purple-Loop" class="arrival-time">
+                            {% for train in arrivals.get("Purple", {}).get("Loop", []) %}
+                                {{ train["minutes"] }} min{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden timestamp for debugging -->
+    <div id="last-updated" style="display:none;">
+        {% if last_updated %}{{ last_updated }}{% endif %}
+    </div>
+
     <script>
         async function fetchArrivals() {
             try {
-                const response = await fetch("/arrivals_json");
+                const response = await fetch('/arrivals_json');
                 const data = await response.json();
 
-                // Update last updated time
-                document.getElementById("last-updated").textContent =
-                    data.last_updated ? `Last updated: ${data.last_updated}` : "Last updated: --";
-
-                // Loop through arrivals and update DOM
-                for (let line in data.arrivals) {
-                    for (let dest in data.arrivals[line]) {
-                        const containerId = `${line}-${dest}`.replace(/\s+/g, '-'); // e.g. Red-Howard
-                        const container = document.getElementById(containerId);
-                        if (container) {
-                            container.innerHTML = ""; // Clear old entries
-                            data.arrivals[line][dest].forEach(train => {
-                                const div = document.createElement("div");
-                                div.className = "train-entry updated"; // Add highlight class
-
-                                div.textContent = `${train.minutes} min (${train.status})`;
-                                if (train.last_train) {
-                                    div.textContent += " 🚋 (Last Train)";
-                                }
-                                if (train.holiday_train) {
-                                    div.textContent += " 🎄 (Holiday Train)";
-                                }
-
-                                container.appendChild(div);
-
-                                // Remove highlight after 500ms
-                                setTimeout(() => {
-                                    div.classList.remove("updated");
-                                }, 500);
-                            });
-
+                // Update arrival times
+                for (const line in data.arrivals) {
+                    for (const dest in data.arrivals[line]) {
+                        const element = document.getElementById(`${line}-${dest}`);
+                        if (element) {
+                            element.textContent = data.arrivals[line][dest]
+                                .map(train => `${train.minutes} min`)
+                                .join(', ');
                         }
                     }
                 }
 
-            } catch (err) {
-                console.error("Error fetching arrivals:", err);
+                // Update hidden timestamp
+                document.getElementById("last-updated").textContent = data.last_updated;
+
+            } catch (error) {
+                console.error('Error fetching arrivals:', error);
             }
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            fetchArrivals();
-            setInterval(fetchArrivals, 10000); // every 10 sec
-        });
+        setInterval(fetchArrivals, 10000); // every 10 seconds
+        fetchArrivals(); // initial load
     </script>
-</head>
-<body>
-    <h1>Wilson Station Train Tracker</h1>
-    <div id="last-updated">
-        {% if last_updated %}
-            Last updated: {{ last_updated.strftime('%H:%M:%S') }}
-        {% else %}
-            Last updated: --
-        {% endif %}
-    </div>
-
-    <div class="line-container">
-        <h2>Red Line – Howard</h2>
-        <div id="Red-Howard">
-            {% for train in arrivals["Red"]["Howard"] %}
-                <div class="train-entry">
-                    {{ train.minutes }} min ({{ train.status }})
-                    {% if train.last_train %} 🚋 (Last Train){% endif %}
-                    {% if train.holiday_train %} 🎄 (Holiday Train){% endif %}
-                </div>
-            {% endfor %}
-        </div>
-
-        <h2>Red Line – 95th</h2>
-        <div id="Red-95th">
-            {% for train in arrivals["Red"]["95th"] %}
-                <div class="train-entry">
-                    {{ train.minutes }} min ({{ train.status }})
-                    {% if train.last_train %} 🚋 (Last Train){% endif %}
-                    {% if train.holiday_train %} 🎄 (Holiday Train){% endif %}
-                </div>
-            {% endfor %}
-        </div>
-
-        <h2>Purple Line – Linden</h2>
-        <div id="Purple-Linden">
-            {% for train in arrivals["Purple"]["Linden"] %}
-                <div class="train-entry">
-                    {{ train.minutes }} min ({{ train.status }})
-                    {% if train.last_train %} 🚋 (Last Train){% endif %}
-                    {% if train.holiday_train %} 🎄 (Holiday Train){% endif %}
-                </div>
-            {% endfor %}
-        </div>
-
-        <h2>Purple Line – Loop</h2>
-        <div id="Purple-Loop">
-            {% for train in arrivals["Purple"]["Loop"] %}
-                <div class="train-entry">
-                    {{ train.minutes }} min ({{ train.status }})
-                    {% if train.last_train %} 🚋 (Last Train){% endif %}
-                    {% if train.holiday_train %} 🎄 (Holiday Train){% endif %}
-                </div>
-            {% endfor %}
-        </div>
-    </div>
 </body>
 </html>
