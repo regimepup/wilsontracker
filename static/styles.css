@@ -65,27 +65,35 @@ h1 {
     background-color: purple;
 }
 
+/* === Inner container for stacking stops === */
 .inner-container {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    width: 100%;
+    flex: 1; /* allows dynamic height */
 }
 
+/* === Inner boxes (each representing one direction) === */
 .inner-box {
-    flex: 1; /* Each half takes 50% of the height */
     display: flex;
     flex-direction: column;
+    width: 100%;
+    flex: 1; /* split evenly */
+    justify-content: space-between;
 }
 
+/* === Sub-boxes (individual stops) === */
 .sub-box {
-    flex: 1; /* Each train takes equal share of its half */
     display: flex;
-    flex-direction: column;
-    justify-content: center; /* Center text vertically */
-    text-align: center;
-    border: 1px solid black; /* Optional: visual debugging */
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    flex: 1; /* evenly split inside inner-box */
+    font-size: 18px;
+    font-weight: bold;
+    border: 1px solid black;
+    overflow: hidden;
 }
-
 
 /* === Stop Name & Arrival Time === */
 .stop-name {
