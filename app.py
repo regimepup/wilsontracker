@@ -135,5 +135,5 @@ def next_arrivals_text():
     return "\n".join(output), 200, {'Content-Type': 'text/plain'}
 if __name__ == "__main__":
     # Start background thread to fetch arrivals every 10 seconds
-    threading.Thread(target=fetch_arrivals, daemon=True).start()
+    threading.Thread(target=get_arrivals, daemon=True).start()
     app.run(debug=True)

@@ -58,34 +58,52 @@
             </div>
         </div>
 
+
         <!-- Purple Line Box -->
         {% if arrivals["Purple"]["Linden"] or arrivals["Purple"]["Loop"] %}
         <div id="purplebox">
             <div class="inner-container">
                 <!-- Top Half: Linden -->
-                <div class="inner-box" id="Purple-Linden">
-                    {% for train in arrivals["Purple"]["Linden"] %}
-                        <div class="train-entry">
-                            {{ train.minutes }} min ({{ train.status }})
-                            {% if train.last_train %} 🚋 (Last Train){% endif %}
-                            {% if train.holiday_train %} 🎄 (Holiday Train){% endif %}
-                        </div>
-                    {% endfor %}
+                <div class="inner-box">
+                    {% if arrivals["Purple"]["Linden"] %}
+                        {% for train in arrivals["Purple"]["Linden"] %}
+                            <div class="sub-box
+                                        {% if train.status == 'Scheduled' %} scheduled{% endif %}
+                                        {% if train.holiday_train %} holiday-train{% endif %}">
+                                <span class="stop-name">Linden</span>
+                                <span class="arrival-time">
+                                    {{ train.minutes }} min
+                                    {% if train.last_train %}<span class="last-train"> (LAST TRAIN)</span>{% endif %}
+                                </span>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="sub-box">No arrivals</div>
+                    {% endif %}
                 </div>
 
                 <!-- Bottom Half: Loop -->
-                <div class="inner-box" id="Purple-Loop">
-                    {% for train in arrivals["Purple"]["Loop"] %}
-                        <div class="train-entry">
-                            {{ train.minutes }} min ({{ train.status }})
-                            {% if train.last_train %} 🚋 (Last Train){% endif %}
-                            {% if train.holiday_train %} 🎄 (Holiday Train){% endif %}
-                        </div>
-                    {% endfor %}
+                <div class="inner-box">
+                    {% if arrivals["Purple"]["Loop"] %}
+                        {% for train in arrivals["Purple"]["Loop"] %}
+                            <div class="sub-box
+                                        {% if train.status == 'Scheduled' %} scheduled{% endif %}
+                                        {% if train.holiday_train %} holiday-train{% endif %}">
+                                <span class="stop-name">Loop</span>
+                                <span class="arrival-time">
+                                    {{ train.minutes }} min
+                                    {% if train.last_train %}<span class="last-train"> (LAST TRAIN)</span>{% endif %}
+                                </span>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="sub-box">No arrivals</div>
+                    {% endif %}
                 </div>
             </div>
         </div>
         {% endif %}
+
     </div>
     <div class="emoji-key" style="margin-top:20px; font-size:18px; text-align:center;">
     ⏰ – Scheduled &nbsp;&nbsp; 📶 – Tracked &nbsp;&nbsp; 🎄 – Holiday Train &nbsp;&nbsp;
